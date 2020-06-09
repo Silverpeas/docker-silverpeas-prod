@@ -1,4 +1,4 @@
-FROM ubuntu:xenial
+FROM ubuntu:bionic
 
 MAINTAINER Miguel Moquillon "miguel.moquillon@silverpeas.org"
 
@@ -8,8 +8,8 @@ ENV TERM=xterm
 # Install required and recommended programs for Silverpeas
 #
 
-# Installation of ImageMagick, Ghostscript, and then
-# the dependencies required to build SWFTools and PDF2JSON
+# Installation of LibreOffice, ImageMagick, Ghostscript, and then
+# the dependencies required to run SWFTools and PDF2JSON
 RUN apt-get update && apt-get install -y \
     wget \
     locales \
@@ -21,6 +21,7 @@ RUN apt-get update && apt-get install -y \
     ffmpeg \
     imagemagick \
     ghostscript \
+    libreoffice \
     ure \
     gpgv \
   && rm -rf /var/lib/apt/lists/* \
@@ -78,9 +79,9 @@ ENV JAVA_HOME /docker-java-home
 ENV SILVERPEAS_HOME /opt/silverpeas
 ENV JBOSS_HOME /opt/wildfly
 
-ENV SILVERPEAS_VERSION=6.0.2
-ENV WILDFLY_VERSION=10.1.0
-LABEL name="Silverpeas 6" description="Image to install and to run Silverpeas 6" vendor="Silverpeas" version="6.0.2" build=1
+ENV SILVERPEAS_VERSION=6.1-build200607
+ENV WILDFLY_VERSION=18.0.1
+LABEL name="Silverpeas 6" description="Image to install and to run Silverpeas 6" vendor="Silverpeas" version="6.1-build200607" build=1
 
 # Fetch both Silverpeas and Wildfly and unpack them into /opt
 RUN wget -nc https://www.silverpeas.org/files/silverpeas-${SILVERPEAS_VERSION}-wildfly${WILDFLY_VERSION%.?.?}.zip \
@@ -120,8 +121,8 @@ RUN ./silverpeas assemble \
 EXPOSE 8000 9990
 
 # The following Silverpeas folders are exposed by default so that you can access outside the container the logs, 
-# the data, and the workflow definitions that are produced in Silverpeas.
-VOLUME ["/opt/silverpeas/log", "/opt/silverpeas/data", "/opt/silverpeas/xmlcomponents/workflows"]
+# the data, the properties and the workflow definitions that are produced in Silverpeas.
+VOLUME ["/opt/silverpeas/log", "/opt/silverpeas/data", "/opt/silverpeas/properties", "/opt/silverpeas/xmlcomponents/workflows"]
 
 # What to execute by default when running the container
 CMD ["/opt/run.sh"]
