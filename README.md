@@ -10,10 +10,10 @@ The `Dockerfile` used to build a Docker image of Silverpeas 6 is generated from 
 `Dockerfile.template` by the shell script `generate-dockerfile.sh`. The script accepts two arguments:
 the versions of both Silverpeas 6 and Wildfly for which a `Dockerfile` has to be generated.
 
-For example, to generate a Docker image of Silverpeas 6.1 and with Wildfly 10.1.0 as application 
+For example, to generate a Docker image of Silverpeas 6.1 and with Wildfly 18.0.1 as application 
 server:
 
-	$ ./generate-dockerfile.sh 6.1 10.1.0
+	$ ./generate-dockerfile.sh 6.1 18.0.1
 
 The generator is dedicated to be used only by ourselves to generate and to tag the `Dockerfile` for 
 a new version of Silverpeas. This descriptor will then be used to build the latest official Docker

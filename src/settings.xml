@@ -7,7 +7,7 @@
     <mirror>
       <id>silverpeas</id>
       <mirrorOf>*</mirrorOf>
-      <url>http://www.silverpeas.org/nexus/content/groups/silverpeas</url>
+      <url>https://www.silverpeas.org/nexus/content/groups/silverpeas</url>
     </mirror>
   </mirrors>
 

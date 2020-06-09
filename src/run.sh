@@ -13,8 +13,6 @@ pre_install() {
   dbname=${DB_NAME:-Silverpeas}
   dbuser=${DB_USER:-silverpeas}
   dbpassword=${DB_PASSWORD}
-  cvrhost=${CONVERTER_HOST}
-  cvrport=${CONVERTER_PORT:-8100}
 
   if [ ! "Z${dbpassword}" = "Z" ]; then
     echo "Generate ${SILVERPEAS_HOME}/configuration/config.properties..."
@@ -24,9 +22,6 @@ DB_SERVER = $dbserver
 DB_NAME = $dbname
 DB_USER = $dbuser
 DB_PASSWORD = $dbpassword
-
-CONVERTER_HOST = $cvrhost
-CONVERTER_PORT = $cvrport
 EOF
     test "Z${dbport}" = "Z" || echo "DB_PORT_$dbtype = $dbport" >> ${SILVERPEAS_HOME}/configuration/config.properties
   fi
