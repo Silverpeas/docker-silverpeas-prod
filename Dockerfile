@@ -12,6 +12,7 @@ ENV TERM=xterm
 # the dependencies required to run SWFTools and PDF2JSON
 RUN apt-get update && apt-get install -y \
     wget \
+    vim \
     locales \
     procps \
     net-tools \
@@ -79,9 +80,9 @@ ENV JAVA_HOME /docker-java-home
 ENV SILVERPEAS_HOME /opt/silverpeas
 ENV JBOSS_HOME /opt/wildfly
 
-ENV SILVERPEAS_VERSION=6.1-build200607
+ENV SILVERPEAS_VERSION=6.1
 ENV WILDFLY_VERSION=18.0.1
-LABEL name="Silverpeas 6" description="Image to install and to run Silverpeas 6" vendor="Silverpeas" version="6.1-build200607" build=1
+LABEL name="Silverpeas 6" description="Image to install and to run Silverpeas 6" vendor="Silverpeas" version="6.1" build=2
 
 # Fetch both Silverpeas and Wildfly and unpack them into /opt
 RUN wget -nc https://www.silverpeas.org/files/silverpeas-${SILVERPEAS_VERSION}-wildfly${WILDFLY_VERSION%.?.?}.zip \
@@ -100,6 +101,9 @@ RUN wget -nc https://www.silverpeas.org/files/silverpeas-${SILVERPEAS_VERSION}-w
 # the Silverpeas Nexus Repository
 COPY src/settings.xml /root/.m2/
 
+# Copy the customized Silverpeas installation settings
+COPY src/silverpeas.gradle ${SILVERPEAS_HOME}/bin/
+
 # Set the default working directory
 WORKDIR ${SILVERPEAS_HOME}/bin
 
@@ -107,8 +111,10 @@ WORKDIR ${SILVERPEAS_HOME}/bin
 COPY src/run.sh /opt/
 COPY src/converter.groovy ${SILVERPEAS_HOME}/configuration/silverpeas/
 
-# Assemble Silverpeas
-RUN ./silverpeas assemble \
+# Assemble Silverpeas. Rename the script to match what is is expected by the migration descriptor
+RUN sed -i -e "s/SILVERPEAS_VERSION/${SILVERPEAS_VERSION}/g" ${SILVERPEAS_HOME}/bin/silverpeas.gradle \
+  && ./silverpeas construct \
+  && mv ../migrations/db/h2/busCore/up040/alter-table.sql ../migrations/db/h2/busCore/up040/alter_table.sql \
   && rm ../log/build-* \
   && touch .install
 

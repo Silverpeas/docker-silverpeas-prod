@@ -47,14 +47,29 @@ if [ -f ${SILVERPEAS_HOME}/bin/.install ]; then
   pre_install
   if [ -f ${SILVERPEAS_HOME}/configuration/config.properties ]; then
     echo "First start: set up Silverpeas ..."
-    ./silverpeas install && rm ${SILVERPEAS_HOME}/bin/.install
+    set +e
+    ./silverpeas install
+    if [ $? -eq 0 ]; then
+       rm ${SILVERPEAS_HOME}/bin/.install
+    else
+      echo "Error while setting up Silverpeas"
+      echo
+      for f in ${SILVERPEAS_HOME}/log/build-*; do
+        cat $f
+      done
+      exit 1
+    fi
+    set -e
+  else
+    echo "No ${SILVERPEAS_HOME}/configuration/config.properties found!"
+    exit 1
   fi
 fi
 
 if [ -f ${SILVERPEAS_HOME}/configuration/config.properties ] && [ ! -e ${SILVERPEAS_HOME}/bin/.install ]; then
   start_silverpeas
 else
-  echo "No ${SILVERPEAS_HOME}/configuration/config.properties found! No start!"
+  echo "A failure has occurred in the setting up of Silverpeas! No start!"
   exit 1
 fi
 

@@ -12,6 +12,7 @@ ENV TERM=xterm
 # the dependencies required to run SWFTools and PDF2JSON
 RUN apt-get update && apt-get install -y \
     wget \
+    vim \
     locales \
     procps \
     net-tools \
@@ -100,6 +101,9 @@ RUN wget -nc https://www.silverpeas.org/files/silverpeas-${SILVERPEAS_VERSION}-w
 # the Silverpeas Nexus Repository
 COPY src/settings.xml /root/.m2/
 
+# Copy the customized Silverpeas installation settings
+COPY src/silverpeas.gradle ${SILVERPEAS_HOME}/bin/
+
 # Set the default working directory
 WORKDIR ${SILVERPEAS_HOME}/bin
 
@@ -108,7 +112,8 @@ COPY src/run.sh /opt/
 COPY src/converter.groovy ${SILVERPEAS_HOME}/configuration/silverpeas/
 
 # Assemble Silverpeas
-RUN ./silverpeas assemble \
+RUN sed -i -e "s/SILVERPEAS_VERSION/${SILVERPEAS_VERSION}/g" ${SILVERPEAS_HOME}/bin/silverpeas.gradle \
+  && ./silverpeas construct \
   && rm ../log/build-* \
   && touch .install
 
