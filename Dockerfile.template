@@ -88,7 +88,7 @@ ENV JBOSS_HOME /opt/wildfly
 
 ENV SILVERPEAS_VERSION=TARGET_SILVERPEAS_VERSION
 ENV WILDFLY_VERSION=TARGET_WILDFLY_VERSION
-LABEL name="Silverpeas 6" description="Image to install and to run Silverpeas 6" vendor="Silverpeas" version="TARGET_SILVERPEAS_VERSION" build=1
+LABEL name="Silverpeas TARGET_SILVERPEAS_VERSION" description="Image to install and to run Silverpeas TARGET_SILVERPEAS_VERSION" vendor="Silverpeas" version="TARGET_SILVERPEAS_VERSION" build=1
 
 # Fetch both Silverpeas and Wildfly and unpack them into /opt
 RUN wget -nc https://www.silverpeas.org/files/silverpeas-${SILVERPEAS_VERSION}-wildfly${WILDFLY_VERSION%.?.?}.zip \

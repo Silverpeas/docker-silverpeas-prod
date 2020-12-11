@@ -111,10 +111,9 @@ WORKDIR ${SILVERPEAS_HOME}/bin
 COPY src/run.sh /opt/
 COPY src/converter.groovy ${SILVERPEAS_HOME}/configuration/silverpeas/
 
-# Assemble Silverpeas. Rename the script to match what is is expected by the migration descriptor
+# Construct Silverpeas
 RUN sed -i -e "s/SILVERPEAS_VERSION/${SILVERPEAS_VERSION}/g" ${SILVERPEAS_HOME}/bin/silverpeas.gradle \
   && ./silverpeas construct \
-  && mv ../migrations/db/h2/busCore/up040/alter-table.sql ../migrations/db/h2/busCore/up040/alter_table.sql \
   && rm ../log/build-* \
   && touch .install
 
