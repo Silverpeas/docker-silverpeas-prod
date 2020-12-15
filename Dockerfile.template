@@ -107,8 +107,8 @@ WORKDIR ${SILVERPEAS_HOME}/bin
 COPY src/run.sh /opt/
 COPY src/converter.groovy ${SILVERPEAS_HOME}/configuration/silverpeas/
 
-# Assemble Silverpeas
-RUN ./silverpeas assemble \
+# Construct Silverpeas
+RUN ./silverpeas construct \
   && rm ../log/build-* \
   && touch .install
 
