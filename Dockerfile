@@ -1,4 +1,4 @@
-FROM ubuntu:bionic
+FROM ubuntu:focal
 
 MAINTAINER Miguel Moquillon "miguel.moquillon@silverpeas.org"
 
@@ -10,15 +10,22 @@ ENV TERM=xterm
 
 # Installation of LibreOffice, ImageMagick, Ghostscript, and then
 # the dependencies required to run SWFTools and PDF2JSON
-RUN apt-get update && apt-get install -y \
+RUN apt-get update \
+  && apt-get install -y tzdata \ 
+  && apt-get install -y \
+    apt-utils \
+    iputils-ping \
+    curl \
     wget \
     vim \
     locales \
+    language-pack-en \
+    language-pack-fr \
     procps \
     net-tools \
     zip \
     unzip \
-    openjdk-8-jdk \
+    openjdk-11-jdk \
     ffmpeg \
     imagemagick \
     ghostscript \
@@ -44,7 +51,7 @@ RUN wget -nc https://www.silverpeas.org/files/pdf2json-bin-0.68.zip \
 # Set up environment to install and to run Silverpeas
 #
 
-# Default locale of the platform. It can be overriden to build an image for a specific locale other than en_US.UTF-8.
+# Default locale of the platform. It can be overridden to build an image for a specific locale other than en_US.UTF-8.
 ARG DEFAULT_LOCALE=en_US.UTF-8
 
 # Generate locales and set the default one
@@ -73,16 +80,16 @@ RUN { \
 	&& chmod +x /usr/local/bin/docker-java-home
 
 # do some fancy footwork to create a JAVA_HOME that's cross-architecture-safe
-RUN ln -svT "/usr/lib/jvm/java-8-openjdk-$(dpkg --print-architecture)" /docker-java-home
+RUN ln -svT "/usr/lib/jvm/java-11-openjdk-$(dpkg --print-architecture)" /docker-java-home
 
 # Set up environment variables for Silverpeas
 ENV JAVA_HOME /docker-java-home
 ENV SILVERPEAS_HOME /opt/silverpeas
 ENV JBOSS_HOME /opt/wildfly
 
-ENV SILVERPEAS_VERSION=6.1
-ENV WILDFLY_VERSION=18.0.1
-LABEL name="Silverpeas 6" description="Image to install and to run Silverpeas 6" vendor="Silverpeas" version="6.1" build=2
+ENV SILVERPEAS_VERSION=6.2
+ENV WILDFLY_VERSION=20.0.1
+LABEL name="Silverpeas 6.2" description="Image to install and to run Silverpeas 6.2" vendor="Silverpeas" version="6.2" build=1
 
 # Fetch both Silverpeas and Wildfly and unpack them into /opt
 RUN wget -nc https://www.silverpeas.org/files/silverpeas-${SILVERPEAS_VERSION}-wildfly${WILDFLY_VERSION%.?.?}.zip \
@@ -111,7 +118,7 @@ WORKDIR ${SILVERPEAS_HOME}/bin
 COPY src/run.sh /opt/
 COPY src/converter.groovy ${SILVERPEAS_HOME}/configuration/silverpeas/
 
-# Construct Silverpeas
+# Assemble Silverpeas
 RUN sed -i -e "s/SILVERPEAS_VERSION/${SILVERPEAS_VERSION}/g" ${SILVERPEAS_HOME}/bin/silverpeas.gradle \
   && ./silverpeas construct \
   && rm ../log/build-* \
