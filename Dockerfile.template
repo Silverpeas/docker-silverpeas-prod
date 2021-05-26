@@ -10,7 +10,9 @@ ENV TERM=xterm
 
 # Installation of LibreOffice, ImageMagick, Ghostscript, and then
 # the dependencies required to run SWFTools and PDF2JSON
-RUN apt-get update && apt-get install -y \
+RUN apt-get update \
+  && apt-get install -y tzdata \
+  && apt-get install -y \
     apt-utils \
     iputils-ping \
     curl \
@@ -19,7 +21,6 @@ RUN apt-get update && apt-get install -y \
     locales \
     language-pack-en \
     language-pack-fr \
-    tzdata \
     procps \
     net-tools \
     zip \
