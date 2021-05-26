@@ -21,7 +21,6 @@ RUN apt-get update \
     locales \
     language-pack-en \
     language-pack-fr \
-    tzdata \
     procps \
     net-tools \
     zip \
