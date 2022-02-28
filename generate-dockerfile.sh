@@ -21,4 +21,5 @@ else
 
   sed -e "s/TARGET_SILVERPEAS_VERSION/${silverpeas_version}/g" Dockerfile.template > Dockerfile
   sed -i -e "s/TARGET_WILDFLY_VERSION/${wildfly_version}/g" Dockerfile
+  sed -i -e "s/build=.\+/build=1/g" Dockerfile
 fi
