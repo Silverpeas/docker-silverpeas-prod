@@ -15,7 +15,19 @@ GitCommit: $2
 }
 
 isFirst=1
+currentBase=""
+count=0
 for version in `git tag | tac | grep "^[0-9.]\+$"`; do
+  base=`echo $version | grep -o "[0-9].[0-9]"`
+  if [ "$base" != "$currentBase" ]; then
+    currentBase="$base"
+  else
+    continue
+  fi
+
+  test $count -eq 2 && break
+
+  count=$(( count + 1 ))
   commit=`git rev-parse ${version}`
   if [ $isFirst -eq 1 ]; then
     isFirst=0
