@@ -89,14 +89,14 @@ ENV JBOSS_HOME /opt/wildfly
 
 ENV SILVERPEAS_VERSION=6.2.3
 ENV WILDFLY_VERSION=20.0.1
-LABEL name="Silverpeas 6.2.3" description="Image to install and to run Silverpeas 6.2.3" vendor="Silverpeas" version="6.2.3" build=1
+LABEL name="Silverpeas 6.2.3" description="Image to install and to run Silverpeas 6.2.3" vendor="Silverpeas" version="6.2.3" build=2
 
 # Fetch both Silverpeas and Wildfly and unpack them into /opt
 RUN wget -nc https://www.silverpeas.org/files/silverpeas-${SILVERPEAS_VERSION}-wildfly${WILDFLY_VERSION%.?.?}.zip \
   && wget -nc https://www.silverpeas.org/files/silverpeas-${SILVERPEAS_VERSION}-wildfly${WILDFLY_VERSION%.?.?}.zip.asc \
   && gpg --keyserver keys.openpgp.org --recv-keys 3F4657EF9C591F2FEA458FEBC19391EB3DF442B6 \
   && gpg --batch --verify silverpeas-${SILVERPEAS_VERSION}-wildfly${WILDFLY_VERSION%.?.?}.zip.asc silverpeas-${SILVERPEAS_VERSION}-wildfly${WILDFLY_VERSION%.?.?}.zip \
-  && wget -nc http://download.jboss.org/wildfly/${WILDFLY_VERSION}.Final/wildfly-${WILDFLY_VERSION}.Final.zip \
+  && wget -nc https://silverpeas.org/files/wildfly-${WILDFLY_VERSION}.Final.zip \
   && unzip silverpeas-${SILVERPEAS_VERSION}-wildfly${WILDFLY_VERSION%.?.?}.zip -d /opt \
   && unzip wildfly-${WILDFLY_VERSION}.Final.zip -d /opt \
   && mv /opt/silverpeas-${SILVERPEAS_VERSION}-wildfly${WILDFLY_VERSION%.?.?} /opt/silverpeas \
