@@ -4,7 +4,7 @@
 version: '3'
 services:
   silverpeas:
-    image: silverpeas
+    image: silverpeas:${SILVERPEAS_VERSION}
     networks:
       - network
     container_name: silverpeas
@@ -24,7 +24,7 @@ services:
       - silverpeas-log:/opt/silverpeas/log
       - silverpeas-data:/opt/silverpeas/data
   postgresql:
-    image: postgres
+    image: postgres:${POSTGRESQL_VERSION}
     networks:
       - network
     container_name: postgresql
