@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:jammy
 
 MAINTAINER Miguel Moquillon "miguel.moquillon@silverpeas.org"
 
@@ -11,8 +11,8 @@ ENV TERM=xterm
 # Installation of LibreOffice, ImageMagick, Ghostscript, and then
 # the dependencies required to run SWFTools and PDF2JSON
 RUN apt-get update \
-  && apt-get install -y tzdata \ 
-  && apt-get install -y \
+  && apt-get install -y --no-install-recommends tzdata \ 
+  && apt-get install -y --no-install-recommends \
     apt-utils \
     iputils-ping \
     curl \
@@ -103,6 +103,13 @@ RUN wget -nc https://www.silverpeas.org/files/silverpeas-${SILVERPEAS_VERSION}-w
   && mv /opt/wildfly-${WILDFLY_VERSION}.Final /opt/wildfly \
   && rm *.zip \
   && mkdir -p /root/.m2
+
+# Install the JCR migration script
+COPY src/oak-migrate.zip /opt/
+RUN mkdir /opt/oak-migration \
+  && unzip /opt/oak-migrate.zip -d /opt/oak-migration/ \
+  && chmod +x /opt/oak-migration/oak-migrate.sh \
+  && rm /opt/oak-migrate.zip
 
 # Copy the Maven settings.xml required to install Silverpeas by fetching the software bundles from 
 # the Silverpeas Nexus Repository

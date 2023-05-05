@@ -6,7 +6,14 @@ set -e
 # of Silverpeas
 #
 
+# Creates the Silverpeas global configuration file config.properties from the environment variables
+# set in the Docker image
 pre_install() {
+  if [ -f ${SILVERPEAS_HOME}/configuration/config.properties ]; then
+    echo "The configuration file ${SILVERPEAS_HOME}/configuration/config.properties already exists. Does nothing"
+    return
+  fi
+
   dbtype=${DB_SERVERTYPE:-POSTGRESQL}
   dbserver=${DB_SERVER:-database}
   dbport=${DB_PORT}
@@ -27,17 +34,44 @@ EOF
   fi
 }
 
+# Start Silverpeas
 start_silverpeas() {
   echo "Start Silverpeas..."
   exec ${JBOSS_HOME}/bin/standalone.sh -b 0.0.0.0 -c standalone-full.xml
 }
 
+# Stop Silverpeas
 stop_silverpeas() {
   echo "Stop Silverpeas..."
   ./silverpeas stop
   local pids=`jobs -p`
   if [ "Z$pids" != "Z" ]; then
     kill $pids &> /dev/null
+  fi
+}
+
+# Migrate the JCR from Apache Jackrabbit 2 to Apache Jackrabbit Oak
+# For doing we have to find out where the JCR home directory is located.
+migrate_jcr() {
+  jcr_home=`grep "JCR_HOME[ ]*=" ${SILVERPEAS_HOME}/configuration/config.properties  | cut -d '=' -f 2`
+  if [ "Z${jcr_home}" = "Z" ]; then
+    jcr_home="$SILVERPEAS_HOME}/data/jcr"
+  else
+    data_home=`grep "SILVERPEAS_DATA_HOME=" ${SILVERPEAS_HOME}/configuration/config.properties  | cut -d '=' -f 2`
+    if [ "Z${data_home}" = "Z" ]; then
+      data_home="$SILVERPEAS_HOME}/data"
+    else
+      data_home=`sed -e "s/{env./{/g" <<< "${data_home}"`
+      data_home=`eval echo -e "${data_home}"`
+    fi    
+    jcr_home=`sed -e "s/SILVERPEAS_DATA_HOME/data_home/g" <<< "${jcr_home}"`
+    jcr_home=`eval echo -e "${jcr_home}"`
+  fi
+
+  jcr_dir=`dirname ${jcr_home}`
+  if [ -d "${jcr_dir}/jackrabbit" ] && [ ! -d "${jcr_dir}/jcr/segmentstore" ]; then
+    echo "Migrate the JCR from Apache Jackrabbit 2 to Apache Jackrabbit Oak..."
+    /opt/oak-migration/oak-migrate.sh "${jcr_dir}/jackrabbit" "${jcr_dir}/jcr"
   fi
 }
 
@@ -51,6 +85,7 @@ if [ -f ${SILVERPEAS_HOME}/bin/.install ]; then
     ./silverpeas install
     if [ $? -eq 0 ]; then
        rm ${SILVERPEAS_HOME}/bin/.install
+       migrate_jcr
     else
       echo "Error while setting up Silverpeas"
       echo

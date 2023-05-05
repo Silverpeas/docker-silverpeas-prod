@@ -35,9 +35,9 @@ To build an image for a given version of Silverpeas 6, say 6.1:
 
 	$ ./build.sh -v 6.1
 
-This will checkout the tag 6.1 and then build the image from the `Dockerfile` at this tag.
+This will checkout the tag 6.1 and then build the image from the tagged `Dockerfile`.
 
-By default, the image is created with as default locale `en_US.UTF-8`. To specify another locale, for example `fr_FR.UTF-8`, just do:
+By default, the image is created with `en_US.UTF-8` as the default locale. To specify another locale, for example `fr_FR.UTF-8`, just do:
 
 	$ ./build.sh -l fr_FR.UTF-8
 
@@ -55,7 +55,7 @@ For doing, an excerpt of a Docker compose descriptor `docker-compose.yml` is pro
 
 	$ docker compose up
 
-to launch both the PostgreSQL and Silverpeas services. At creation of the Silverpeas service, Silverpeas will be automatically reconfigured to use the PostgreSQL database as defined in the `.env` file.
+to create and then to launch both the PostgreSQL and Silverpeas services. At creation of the Silverpeas service, Silverpeas will be automatically reconfigured to use the PostgreSQL database as defined in the `.env` file.
 
 To stop the services:
 
