@@ -127,7 +127,8 @@ COPY src/converter.groovy ${SILVERPEAS_HOME}/configuration/silverpeas/
 
 # Assemble Silverpeas
 RUN sed -i -e "s/SILVERPEAS_VERSION/${SILVERPEAS_VERSION}/g" ${SILVERPEAS_HOME}/bin/silverpeas.gradle \
-  && ./silverpeas construct \
+  && echo "Construct Silverpeas ${SILVERPEAS_VERSION}" \
+  && ./silverpeas assemble || eval "cat ../log/build-* && exit 1" \
   && rm ../log/build-* \
   && touch .install
 

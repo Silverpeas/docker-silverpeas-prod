@@ -70,3 +70,10 @@ Once the services are started, you can connect to the container running Silverpe
 	$ docker exec -u root -it silverpeas /bin/bash
 
 Inside the container, you can then update by hand the configuration of Silverpeas and Wildfly.
+
+To update one of the running container to a new version, just edit the `.env` file by specifying into it the new version 
+of PostgreSQL or of Silverpeas and then:
+
+	$ docker compose up
+
+It will take care to stop the running container, then to build the new one from the new version of the image and finally to run it. As the data are stored into external volumes (and not in the container), the data of the application will be kept for the new running container.

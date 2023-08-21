@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:jammy
 
 MAINTAINER Miguel Moquillon "miguel.moquillon@silverpeas.org"
 
@@ -87,9 +87,9 @@ ENV JAVA_HOME /docker-java-home
 ENV SILVERPEAS_HOME /opt/silverpeas
 ENV JBOSS_HOME /opt/wildfly
 
-ENV SILVERPEAS_VERSION=6.3
-ENV WILDFLY_VERSION=26.1.1
-LABEL name="Silverpeas 6.3" description="Image to install and to run Silverpeas 6.3" vendor="Silverpeas" version="6.3" build=1
+ENV SILVERPEAS_VERSION=6.4-build230820
+ENV WILDFLY_VERSION=26.1.3
+LABEL name="Silverpeas 6.4-build230820" description="Image to install and to run Silverpeas 6.4-build230820" vendor="Silverpeas" version="6.4-build230820" build=1
 
 # Fetch both Silverpeas and Wildfly and unpack them into /opt
 RUN wget -nc https://www.silverpeas.org/files/silverpeas-${SILVERPEAS_VERSION}-wildfly${WILDFLY_VERSION%.?.?}.zip \
@@ -103,6 +103,13 @@ RUN wget -nc https://www.silverpeas.org/files/silverpeas-${SILVERPEAS_VERSION}-w
   && mv /opt/wildfly-${WILDFLY_VERSION}.Final /opt/wildfly \
   && rm *.zip \
   && mkdir -p /root/.m2
+
+# Install the JCR migration script
+COPY src/oak-migrate.zip /opt/
+RUN mkdir /opt/oak-migration \
+  && unzip /opt/oak-migrate.zip -d /opt/oak-migration/ \
+  && chmod +x /opt/oak-migration/oak-migrate.sh \
+  && rm /opt/oak-migrate.zip
 
 # Copy the Maven settings.xml required to install Silverpeas by fetching the software bundles from 
 # the Silverpeas Nexus Repository
@@ -120,7 +127,8 @@ COPY src/converter.groovy ${SILVERPEAS_HOME}/configuration/silverpeas/
 
 # Assemble Silverpeas
 RUN sed -i -e "s/SILVERPEAS_VERSION/${SILVERPEAS_VERSION}/g" ${SILVERPEAS_HOME}/bin/silverpeas.gradle \
-  && ./silverpeas construct \
+  && echo "Construct Silverpeas ${SILVERPEAS_VERSION}" \
+  && ./silverpeas assemble || eval "cat ../log/build-* && exit 1" \
   && rm ../log/build-* \
   && touch .install
 

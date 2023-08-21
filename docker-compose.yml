@@ -1,4 +1,4 @@
-# SilverPeas with PostGreSQL
+# Silverpeas with PostGreSQL
 # Access via http://localhost:8080/silverpeas
 
 version: '3'
