@@ -35,6 +35,7 @@ for version in `git tag | tac | grep "^[0-9.]\+$"`; do
     isFirst=0
     printVersion "${version}, latest" ${commit} ${fetch}
   else
+    test $version = "6.2.3" && version="6.2.3-b1"
     printVersion "${version}" ${commit} ${fetch}
   fi
 done
