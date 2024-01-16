@@ -87,9 +87,9 @@ ENV JAVA_HOME /docker-java-home
 ENV SILVERPEAS_HOME /opt/silverpeas
 ENV JBOSS_HOME /opt/wildfly
 
-ENV SILVERPEAS_VERSION=6.4-build230820
+ENV SILVERPEAS_VERSION=6.4-build240107
 ENV WILDFLY_VERSION=26.1.3
-LABEL name="Silverpeas 6.4-build230820" description="Image to install and to run Silverpeas 6.4-build230820" vendor="Silverpeas" version="6.4-build230820" build=1
+LABEL name="Silverpeas 6.4-build240107" description="Image to install and to run Silverpeas 6.4-build240107" vendor="Silverpeas" version="6.4-build240107" build=1
 
 # Fetch both Silverpeas and Wildfly and unpack them into /opt
 RUN wget -nc https://www.silverpeas.org/files/silverpeas-${SILVERPEAS_VERSION}-wildfly${WILDFLY_VERSION%.?.?}.zip \
