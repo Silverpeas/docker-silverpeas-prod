@@ -51,6 +51,7 @@ if [ -f ${SILVERPEAS_HOME}/bin/.install ]; then
     ./silverpeas install
     if [ $? -eq 0 ]; then
        rm ${SILVERPEAS_HOME}/bin/.install
+       curl -k -i --head https://www.silverpeas.org/ping
     else
       echo "Error while setting up Silverpeas"
       echo
