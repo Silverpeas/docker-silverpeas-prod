@@ -90,7 +90,7 @@ if [ -f ${SILVERPEAS_HOME}/bin/.install ]; then
     if [ $? -eq 0 ]; then
        rm ${SILVERPEAS_HOME}/bin/.install
        migrate_jcr
-       curl -k -i --head https://www.silverpeas.org/ping
+       test ${PING_ON} = 1 && curl -k -i --head https://www.silverpeas.org/ping
     else
       echo "Error while setting up Silverpeas"
       echo
