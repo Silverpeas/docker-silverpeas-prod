@@ -65,6 +65,11 @@ ENV LANG ${DEFAULT_LOCALE}
 ENV LANGUAGE ${DEFAULT_LOCALE}
 ENV LC_ALL ${DEFAULT_LOCALE}
 
+# Should a ping to be sent when running the first time the container?
+# 1 : yes
+# any others values : no
+ENV PING_ON 1
+
 #
 # Install Silverpeas and Wildfly
 #
