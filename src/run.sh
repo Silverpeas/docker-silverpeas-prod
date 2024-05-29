@@ -24,6 +24,9 @@ pre_install() {
   if [ ! "Z${dbpassword}" = "Z" ]; then
     echo "Generate ${SILVERPEAS_HOME}/configuration/config.properties..."
     cat > ${SILVERPEAS_HOME}/configuration/config.properties <<-EOF
+SILVERPEAS_USER_LANGUAGE=en
+SILVERPEAS_CONTENT_LANGUAGES=en
+
 DB_SERVERTYPE = $dbtype
 DB_SERVER = $dbserver
 DB_NAME = $dbname
