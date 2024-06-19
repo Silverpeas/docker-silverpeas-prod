@@ -9,7 +9,7 @@ set -e
 # Creates the Silverpeas global configuration file config.properties from the environment variables
 # set in the Docker image
 pre_install() {
-  if [ -f ${SILVERPEAS_HOME}/configuration/config.properties ]; then
+  if [ -f "${SILVERPEAS_HOME}/configuration/config.properties" ]; then
     echo "The configuration file ${SILVERPEAS_HOME}/configuration/config.properties already exists. Does nothing"
     return
   fi
@@ -33,14 +33,14 @@ DB_NAME = $dbname
 DB_USER = $dbuser
 DB_PASSWORD = $dbpassword
 EOF
-    test "Z${dbport}" = "Z" || echo "DB_PORT_$dbtype = $dbport" >> ${SILVERPEAS_HOME}/configuration/config.properties
+    test "Z${dbport}" = "Z" || echo "DB_PORT_$dbtype = $dbport" >> "${SILVERPEAS_HOME}/configuration/config.properties"
   fi
 }
 
 # Start Silverpeas
 start_silverpeas() {
   echo "Start Silverpeas..."
-  exec ${JBOSS_HOME}/bin/standalone.sh -b 0.0.0.0 -c standalone-full.xml
+  exec "${JBOSS_HOME}/bin/standalone.sh" -b 0.0.0.0 -c standalone-full.xml
 }
 
 # Stop Silverpeas
@@ -57,7 +57,7 @@ stop_silverpeas() {
 # For doing we have to find out where the JCR home directory is located.
 migrate_jcr() {
   # figure out the data home directory (by default it is into the Silverpeas home directory)
-  data_home=`grep "SILVERPEAS_DATA_HOME=" ${SILVERPEAS_HOME}/configuration/config.properties  | cut -d '=' -f 2 | xargs`
+  data_home=`grep "SILVERPEAS_DATA_HOME[ ]*=" "${SILVERPEAS_HOME}/configuration/config.properties"  | cut -d '=' -f 2 | xargs`
   if [ "Z${data_home}" = "Z" ]; then
     data_home="${SILVERPEAS_HOME}/data"
   else
@@ -66,7 +66,7 @@ migrate_jcr() {
   fi
 
   # figure out now the JCR home directory (by default it is located into the data home directory)
-  jcr_home=`grep "JCR_HOME[ ]*=" ${SILVERPEAS_HOME}/configuration/config.properties  | cut -d '=' -f 2 | xargs`
+  jcr_home=`grep "JCR_HOME[ ]*=" "${SILVERPEAS_HOME}/configuration/config.properties"  | cut -d '=' -f 2 | xargs`
   if [ "Z${jcr_home}" = "Z" ]; then
     jcr_home="${data_home}/jcr"
   else    
@@ -77,27 +77,28 @@ migrate_jcr() {
   jcr_dir=`dirname ${jcr_home}`
   if [ -d "${jcr_dir}/jackrabbit" ] && [ ! -d "${jcr_dir}/jcr/segmentstore" ]; then
     echo "Migrate the JCR from Apache Jackrabbit 2 to Apache Jackrabbit Oak..."
-    /opt/oak-migration/oak-migrate.sh "${jcr_dir}/jackrabbit" "${jcr_dir}/jcr"
-    test $? -eq 0 || exit 1
+    if ! /opt/oak-migration/oak-migrate.sh "$jcr_dir/jackrabbit" "$jcr_dir/jcr"; then
+      exit 1
+    fi
   fi
 }
 
 trap 'stop_silverpeas' SIGTERM SIGKILL SIGQUIT
 
-if [ -f ${SILVERPEAS_HOME}/bin/.install ]; then
+if [ -f "${SILVERPEAS_HOME}/bin/.install" ]; then
   pre_install
-  if [ -f ${SILVERPEAS_HOME}/configuration/config.properties ]; then
+  if [ -f "${SILVERPEAS_HOME}/configuration/config.properties" ]; then
     echo "First start: set up Silverpeas..."
     set +e
     ./silverpeas install
     if [ $? -eq 0 ]; then
-       rm ${SILVERPEAS_HOME}/bin/.install
+       rm "${SILVERPEAS_HOME}/bin/.install"
        migrate_jcr
        test ${PING_ON} = 1 && curl -k -i --head https://www.silverpeas.org/ping
     else
       echo "Error while setting up Silverpeas"
       echo
-      for f in ${SILVERPEAS_HOME}/log/build-*; do
+      for f in "${SILVERPEAS_HOME}"/log/build-*; do
         cat $f
       done
       exit 1
@@ -109,7 +110,7 @@ if [ -f ${SILVERPEAS_HOME}/bin/.install ]; then
   fi
 fi
 
-if [ -f ${SILVERPEAS_HOME}/configuration/config.properties ] && [ ! -e ${SILVERPEAS_HOME}/bin/.install ]; then
+if [ -f "${SILVERPEAS_HOME}/configuration/config.properties" ] && [ ! -e "${SILVERPEAS_HOME}/bin/.install" ]; then
   start_silverpeas
 else
   echo "A failure has occurred in the setting up of Silverpeas! No start!"

@@ -37,13 +37,13 @@ RUN apt-get update \
 
 # Fetch and install SWFTools
 RUN wget -nc https://www.silverpeas.org/files/swftools-bin-0.9.2.zip \
-  && echo 'd40bd091c84bde2872f2733a3c767b3a686c8e8477a3af3a96ef347cf05c5e43 *swftools-bin-0.9.2.zip' | sha256sum - \
+  && echo 'd40bd091c84bde2872f2733a3c767b3a686c8e8477a3af3a96ef347cf05c5e43 swftools-bin-0.9.2.zip' | sha256sum -c --status - \
   && unzip swftools-bin-0.9.2.zip -d / \
   && rm swftools-bin-0.9.2.zip
 
 # Fetch and install PDF2JSON
 RUN wget -nc https://www.silverpeas.org/files/pdf2json-bin-0.68.zip \
-  && echo 'eec849cdd75224f9d44c0999ed1fbe8764a773d8ab0cf7fff4bf922ab81c9f84 *pdf2json-bin-0.68.zip' | sha256sum - \
+  && echo 'eec849cdd75224f9d44c0999ed1fbe8764a773d8ab0cf7fff4bf922ab81c9f84 pdf2json-bin-0.68.zip' | sha256sum -c --status - \
   && unzip pdf2json-bin-0.68.zip -d / \
   && rm pdf2json-bin-0.68.zip
 
@@ -96,7 +96,7 @@ ENV SILVERPEAS_VERSION=6.4
 ENV WILDFLY_VERSION=26.1.3
 LABEL name="Silverpeas 6.4" description="Image to install and to run Silverpeas 6.4" vendor="Silverpeas" version="6.4" build=1
 
-# Fetch both Silverpeas and Wildfly and unpack them into /opt
+# Fetch both Silverpeas, Wildfly, and the JCR migration script and unpack them into /opt
 RUN wget -nc https://www.silverpeas.org/files/silverpeas-${SILVERPEAS_VERSION}-wildfly${WILDFLY_VERSION%.?.?}.zip \
   && wget -nc https://www.silverpeas.org/files/silverpeas-${SILVERPEAS_VERSION}-wildfly${WILDFLY_VERSION%.?.?}.zip.asc \
   && gpg --keyserver keys.openpgp.org --recv-keys 3F4657EF9C591F2FEA458FEBC19391EB3DF442B6 \
@@ -106,15 +106,13 @@ RUN wget -nc https://www.silverpeas.org/files/silverpeas-${SILVERPEAS_VERSION}-w
   && unzip wildfly-${WILDFLY_VERSION}.Final.zip -d /opt \
   && mv /opt/silverpeas-${SILVERPEAS_VERSION}-wildfly${WILDFLY_VERSION%.?.?} /opt/silverpeas \
   && mv /opt/wildfly-${WILDFLY_VERSION}.Final /opt/wildfly \
+  && wget -nc https://www.silverpeas.org/files/oak-migrate.zip \
+  && echo '02d21f69004f2d9e634e82ec062d94521bd6bc0385d7c0ddf9af261cb63afdbb oak-migrate.zip' | sha256sum -c --status - \
+  && mkdir -p /opt/oak-migration \
+  && unzip oak-migrate.zip -d /opt/oak-migration/ \
+  && chmod +x /opt/oak-migration/oak-migrate.sh \
   && rm *.zip \
   && mkdir -p /root/.m2
-
-# Install the JCR migration script
-COPY src/oak-migrate.zip /opt/
-RUN mkdir /opt/oak-migration \
-  && unzip /opt/oak-migrate.zip -d /opt/oak-migration/ \
-  && chmod +x /opt/oak-migration/oak-migrate.sh \
-  && rm /opt/oak-migrate.zip
 
 # Copy the Maven settings.xml required to install Silverpeas by fetching the software bundles from 
 # the Silverpeas Nexus Repository
@@ -131,11 +129,12 @@ COPY src/run.sh /opt/
 COPY src/converter.groovy ${SILVERPEAS_HOME}/configuration/silverpeas/
 
 # Assemble Silverpeas
-RUN sed -i -e "s/SILVERPEAS_VERSION/${SILVERPEAS_VERSION}/g" ${SILVERPEAS_HOME}/bin/silverpeas.gradle \
-  && echo "Construct Silverpeas ${SILVERPEAS_VERSION}" \
-  && ./silverpeas assemble || eval "cat ../log/build-* && exit 1" \
-  && rm ../log/build-* \
-  && touch .install
+RUN set -eux; \
+  sed -i -e "s/SILVERPEAS_VERSION/${SILVERPEAS_VERSION}/g" ${SILVERPEAS_HOME}/bin/silverpeas.gradle; \
+  echo "Construct Silverpeas ${SILVERPEAS_VERSION}"; \
+  ./silverpeas assemble || (cat ../log/build-* && exit 1); \
+  rm ../log/build-*; \
+  touch .install;
 
 #
 # Expose image entries. By default, when running, the container will set up Silverpeas and Wildfly
@@ -149,5 +148,5 @@ EXPOSE 8000 9990
 # the data, the properties and the workflow definitions that are produced in Silverpeas.
 VOLUME ["/opt/silverpeas/log", "/opt/silverpeas/data", "/opt/silverpeas/properties", "/opt/silverpeas/xmlcomponents/workflows"]
 
-# What to execute by default when running the container
+# What to execute by default when running the container.
 CMD ["/opt/run.sh"]
