@@ -107,7 +107,7 @@ RUN wget -nc https://www.silverpeas.org/files/silverpeas-${SILVERPEAS_VERSION}-w
   && mv /opt/silverpeas-${SILVERPEAS_VERSION}-wildfly${WILDFLY_VERSION%.?.?} /opt/silverpeas \
   && mv /opt/wildfly-${WILDFLY_VERSION}.Final /opt/wildfly \
   && wget -nc https://www.silverpeas.org/files/oak-migrate.zip \
-  && echo '02d21f69004f2d9e634e82ec062d94521bd6bc0385d7c0ddf9af261cb63afdbb oak-migrate.zip' | sha256sum -c --status - \
+  && echo '87009e55520e74b5d2a386f4ebc843ee43cd1f25ca5138f342a94a31add3cfbd oak-migrate.zip' | sha256sum -c --status - \
   && mkdir -p /opt/oak-migration \
   && unzip oak-migrate.zip -d /opt/oak-migration/ \
   && chmod +x /opt/oak-migration/oak-migrate.sh \
