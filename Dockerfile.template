@@ -61,14 +61,14 @@ RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
   && locale-gen \
   && update-locale LANG=${DEFAULT_LOCALE} LANGUAGE=${DEFAULT_LOCALE} LC_ALL=${DEFAULT_LOCALE}
 
-ENV LANG ${DEFAULT_LOCALE}
-ENV LANGUAGE ${DEFAULT_LOCALE}
-ENV LC_ALL ${DEFAULT_LOCALE}
+ENV LANG=${DEFAULT_LOCALE}
+ENV LANGUAGE=${DEFAULT_LOCALE}
+ENV LC_ALL=${DEFAULT_LOCALE}
 
 # Should a ping to be sent when running the first time the container?
 # 1 : yes
 # any others values : no
-ENV PING_ON 1
+ENV PING_ON=1
 
 #
 # Install Silverpeas and Wildfly
@@ -88,9 +88,9 @@ RUN { \
 RUN ln -svT "/usr/lib/jvm/java-11-openjdk-$(dpkg --print-architecture)" /docker-java-home
 
 # Set up environment variables for Silverpeas
-ENV JAVA_HOME /docker-java-home
-ENV SILVERPEAS_HOME /opt/silverpeas
-ENV JBOSS_HOME /opt/wildfly
+ENV JAVA_HOME=/docker-java-home
+ENV SILVERPEAS_HOME=/opt/silverpeas
+ENV JBOSS_HOME=/opt/wildfly
 
 ENV SILVERPEAS_VERSION=TARGET_SILVERPEAS_VERSION
 ENV WILDFLY_VERSION=TARGET_WILDFLY_VERSION
