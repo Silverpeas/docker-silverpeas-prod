@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:jammy
 
 MAINTAINER Miguel Moquillon "miguel.moquillon@silverpeas.org"
 
@@ -94,7 +94,7 @@ ENV JBOSS_HOME /opt/wildfly
 
 ENV SILVERPEAS_VERSION=6.3.6
 ENV WILDFLY_VERSION=26.1.1
-LABEL name="Silverpeas 6.3.6" description="Image to install and to run Silverpeas 6.3.6" vendor="Silverpeas" version="6.3.6" build=1
+LABEL name="Silverpeas 6.3.6" description="Image to install and to run Silverpeas 6.3.6" vendor="Silverpeas" version="6.3.6" build=2
 
 # Fetch both Silverpeas and Wildfly and unpack them into /opt
 RUN wget -nc https://www.silverpeas.org/files/silverpeas-${SILVERPEAS_VERSION}-wildfly${WILDFLY_VERSION%.?.?}.zip \
