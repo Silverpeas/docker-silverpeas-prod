@@ -18,7 +18,7 @@ GitFetch: refs/heads/$3
 isFirst=1
 currentBase=""
 count=0
-for version in `git tag | tac | grep "^[0-9.]\+$"`; do
+for version in `git tag | tac`; do
   base=`echo $version | grep -o "[0-9].[0-9]"`
   if [ "$base" != "$currentBase" ]; then
     currentBase="$base"
