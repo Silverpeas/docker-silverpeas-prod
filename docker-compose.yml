@@ -1,7 +1,6 @@
 # Silverpeas with PostGreSQL
 # Access via http://localhost:8080/silverpeas
 
-version: '3'
 services:
   silverpeas:
     image: silverpeas:${SILVERPEAS_VERSION}

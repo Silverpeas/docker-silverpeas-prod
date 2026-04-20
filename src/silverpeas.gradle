@@ -11,11 +11,16 @@ configurations {
     }
   }
   silverpeas {
-    /* a Silverpeas module is made up of a war and optionally a configuration archive */
+    /* a standard Silverpeas module is made up of a war and optionally a configuration archive */
     description = 'Silverpeas Modules'
   }
+  custom {
+    /* a custom software bundle is a Silverpeas bundle adding custom functionality to Silverpeas */
+    description = 'Custom Silverpeas Modules'
+  }
   library {
-    description = 'Specific Silverpeas or tiers libraries to include into Silverpeas (jar only)'
+    /* tiers library not provided by a remote software repositories */
+    description = 'Tiers libraries to include into Silverpeas (jar only)'
   }
 }
 

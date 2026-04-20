@@ -1,6 +1,17 @@
-FROM ubuntu:jammy
+FROM ubuntu:node
 
-MAINTAINER Miguel Moquillon "miguel.moquillon@silverpeas.org"
+LABEL name="Silverpeas"
+LABEL description="Image to install and to run the Silverpeas Collaborative Portal Application"
+LABEL vendor="Silverpeas"
+LABEL version="6.5"
+LABEL build=1
+
+LABEL org.opencontainers.image.title="Silverpeas"
+LABEL org.opencontainers.image.description="Docker image providing a production-ready version of Silverpeas Collaborative Portal Application"
+LABEL org.opencontainers.image.vendor="Silverpeas"
+LABEL org.opencontainers.image.version="6.5"
+LABEL org.opencontainers.image.authors="Miguel Moquillon <miguel.moquillon@silverpeas.org>"
+LABEL org.opencontainers.image.licenses="AGPLv3"
 
 ENV TERM=xterm
 
@@ -92,9 +103,8 @@ ENV JAVA_HOME=/docker-java-home
 ENV SILVERPEAS_HOME=/opt/silverpeas
 ENV JBOSS_HOME=/opt/wildfly
 
-ENV SILVERPEAS_VERSION=6.4
+ENV SILVERPEAS_VERSION=6.5
 ENV WILDFLY_VERSION=26.1.3
-LABEL name="Silverpeas 6.4" description="Image to install and to run Silverpeas 6.4" vendor="Silverpeas" version="6.4" build=1
 
 # Fetch both Silverpeas, Wildfly, and the JCR migration script and unpack them into /opt
 RUN wget -nc https://www.silverpeas.org/files/silverpeas-${SILVERPEAS_VERSION}-wildfly${WILDFLY_VERSION%.?.?}.zip \
