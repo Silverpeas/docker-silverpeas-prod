@@ -1,4 +1,4 @@
-FROM ubuntu:node
+FROM ubuntu:noble
 
 LABEL name="Silverpeas"
 LABEL description="Image to install and to run the Silverpeas Collaborative Portal Application"
