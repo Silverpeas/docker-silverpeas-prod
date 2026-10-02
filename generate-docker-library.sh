@@ -16,12 +16,18 @@ GitFetch: refs/heads/$3
 }
 
 isFirst=1
-currentBase=""
+lastMainVersion=""
 count=0
-for version in `git tag | tac`; do
-  base=`echo $version | grep -o "[0-9].[0-9]"`
-  if [ "$base" != "$currentBase" ]; then
-    currentBase="$base"
+for tag in `git tag | tac`; do
+  # the version is always in the form x.y.z: any postfix in the tag is removed (6.3.6-jammy -> 6.3.6)
+  # and a tag with only two numbers is completed with a 0 (6.4 -> 6.4.0)
+  version=`echo $tag | grep -oE "^[0-9]+\.[0-9]+(\.[0-9]+)?"`
+  test -z "$version" && continue
+  mainVersion=`echo $version | grep -oE "^[0-9]+\.[0-9]+"`
+  test "$version" = "$mainVersion" && version="${version}.0"
+
+  if [ "$mainVersion" != "$lastMainVersion" ]; then
+    lastMainVersion="$mainVersion"
   else
     continue
   fi
@@ -29,13 +35,12 @@ for version in `git tag | tac`; do
   test $count -eq 2 && break
 
   count=$(( count + 1 ))
-  commit=`git rev-parse ${version}`
-  fetch=`echo ${version} | grep -o "[0-9].[0-9]"`.x
+  commit=`git rev-parse ${tag}`
+  fetch="${mainVersion}.x"
   if [ $isFirst -eq 1 ]; then
     isFirst=0
     printVersion "${version}, latest" ${commit} ${fetch}
   else
-    test $version = "6.2.3" && version="6.2.3-b1"
-    printVersion "${version}" ${commit} ${fetch}
+    printVersion "${version}, ${mainVersion}" ${commit} ${fetch}
   fi
 done
